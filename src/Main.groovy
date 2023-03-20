@@ -17,15 +17,13 @@ import ru.bankffin.dss.proxy.schema.Person
 import ru.bankffin.dss.proxy.schema.PersonAdditionalIncome
 import ru.bankffin.dss.proxy.schema.StatedCreditNeed
 
-def kafkaServiceConfigProperities = new KafkaServiceConfigurationProperties()
-
 class CreditConveyorKafkaServiceConfig extends KafkaServiceConfig {
 
     private final KafkaServiceConfigurationProperties kafkaServiceConfigurationProperties
 
     CreditConveyorKafkaServiceConfig(
-            KafkaServiceConfigurationProperties kafkaServiceConfigProperities) {
-        this.kafkaServiceConfigurationProperties = kafkaServiceConfigProperities
+            KafkaServiceConfigurationProperties kafkaServiceConfigProperties) {
+        this.kafkaServiceConfigurationProperties = kafkaServiceConfigProperties
     }
 
     ProducerFactory<String, InputMessageRequest> creditConveyorProducerFactory() {
@@ -57,16 +55,28 @@ class CreditConveyorKafkaServiceConfig extends KafkaServiceConfig {
     }
 }
 
+
 println("describe payload")
+def kafkaServiceConfigProperities = new KafkaServiceConfigurationProperties()
+kafkaServiceConfigProperities.setBootstrapServers(List.of("localhost:29092"))
+
+//======================================SSL=============================================================================
+def ssl = new KafkaServiceConfigurationProperties.Ssl()
+ssl.setKeyStoreLocation(null)
+ssl.setKeyStorePassword(null)
+ssl.setTrustStoreLocation(null)
+ssl.setTrustStorePassword(null)
+kafkaServiceConfigProperities.setSsl(ssl)
+
+//======================================PRODUCER========================================================================
 def kafkaServiceConfigurationProducer = new KafkaServiceConfigurationProperties.Producer()
 kafkaServiceConfigurationProducer.setTopic("dss.incoming")
 kafkaServiceConfigProperities.setProducer(kafkaServiceConfigurationProducer)
-kafkaServiceConfigProperities.setBootstrapServers(List.of("localhost:29092"))
 def creditConveyorKafkaServiceConfig = new CreditConveyorKafkaServiceConfig(kafkaServiceConfigProperities)
 
 def kafkaTemplate = creditConveyorKafkaServiceConfig.creditConveyorKafkaTemplate()
 
-println("sending....")
+//======================================PAYLOAD=========================================================================
 def statedCreditNeed = new StatedCreditNeed()
 statedCreditNeed.setBasketValue(120000.0)
 statedCreditNeed.setAmount(100000.0)
@@ -108,7 +118,6 @@ document.setIssueDate('06/22/2016')
 document.setIssueOrganizationName('Global Infrastructure Planner')
 document.setIssueOrganizationCode('1837064784')
 def documents = [document]
-
 
 def address1 = new Address()
 address1.setType(10l)
@@ -166,8 +175,6 @@ consent3.setStartDate('03/04/2023 - 14:16:50 +0300')
 consent3.setEndDate('03/10/2023 - 14:16:50 +0300')
 def consents = [consent1, consent2, consent3]
 
-
-
 def payload1 = new InputMessageRequest()
 payload1.setStatedCreditNeed(statedCreditNeed)
 payload1.setExternalRequestId(3519863776035379927)
@@ -182,7 +189,8 @@ payload1.setDocuments(documents)
 payload1.setAddresses(addresses)
 payload1.setConsents(consents)
 
-
+//======================================SENDING=========================================================================
+println("sending....")
 //def future =  kafkaTemplate.send('dss.incoming', payload1)
 //future.get()
 
