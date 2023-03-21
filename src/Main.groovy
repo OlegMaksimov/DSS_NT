@@ -58,14 +58,14 @@ class CreditConveyorKafkaServiceConfig extends KafkaServiceConfig {
 
 println("describe payload")
 def kafkaServiceConfigProperities = new KafkaServiceConfigurationProperties()
-kafkaServiceConfigProperities.setBootstrapServers(List.of("localhost:29092"))
+kafkaServiceConfigProperities.setBootstrapServers(List.of("172.24.7.37:9093"))
 
 //======================================SSL=============================================================================
 def ssl = new KafkaServiceConfigurationProperties.Ssl()
-ssl.setKeyStoreLocation(null)
-ssl.setKeyStorePassword(null)
-ssl.setTrustStoreLocation(null)
-ssl.setTrustStorePassword(null)
+ssl.setKeyStoreLocation('C:\\Projects\\dss-tests\\src\\main\\resources\\client-certs-dss\\dss2auto.keystore')
+ssl.setKeyStorePassword('T1PQe2j5z4EOTYR')
+ssl.setTrustStoreLocation('C:\\Projects\\dss-tests\\src\\main\\resources\\client-certs-dss\\client.truststore')
+ssl.setTrustStorePassword('jDbBrwBzzRGx8ik')
 kafkaServiceConfigProperities.setSsl(ssl)
 
 //======================================PRODUCER========================================================================
@@ -191,7 +191,7 @@ payload1.setConsents(consents)
 
 //======================================SENDING=========================================================================
 println("sending....")
-//def future =  kafkaTemplate.send('dss.incoming', payload1)
-//future.get()
+def future =  kafkaTemplate.send('dss.incoming', payload1)
+future.get()
 
 println('mess was send')
