@@ -7,15 +7,7 @@ import ru.bankffin.dss.kafka_client.AvroDeserializer
 import ru.bankffin.dss.kafka_client.AvroSerializer
 import ru.bankffin.dss.kafka_client.config.KafkaServiceConfig
 import ru.bankffin.dss.kafka_client.config.properties.KafkaServiceConfigurationProperties
-import ru.bankffin.dss.proxy.schema.Address
-import ru.bankffin.dss.proxy.schema.Consent
-import ru.bankffin.dss.proxy.schema.CreditScheme
-import ru.bankffin.dss.proxy.schema.Document
-import ru.bankffin.dss.proxy.schema.InputMessageRequest
-import ru.bankffin.dss.proxy.schema.OutputMessageResponse
-import ru.bankffin.dss.proxy.schema.Person
-import ru.bankffin.dss.proxy.schema.PersonAdditionalIncome
-import ru.bankffin.dss.proxy.schema.StatedCreditNeed
+import ru.bankffin.dss.proxy.schema.*
 
 class CreditConveyorKafkaServiceConfig extends KafkaServiceConfig {
 
@@ -62,15 +54,20 @@ kafkaServiceConfigProperities.setBootstrapServers(List.of("172.24.7.37:9093"))
 
 //======================================SSL=============================================================================
 def ssl = new KafkaServiceConfigurationProperties.Ssl()
-ssl.setKeyStoreLocation('C:\\Projects\\dss-tests\\src\\main\\resources\\client-certs-dss\\dss2auto.keystore')
-ssl.setKeyStorePassword('T1PQe2j5z4EOTYR')
-ssl.setTrustStoreLocation('C:\\Projects\\dss-tests\\src\\main\\resources\\client-certs-dss\\client.truststore')
+ssl.setKeyStoreLocation('/home/oleg/Документы/linux_restore/cifra/dss2/dss.keystore')
+ssl.setKeyStorePassword('mJhbstscbFx5sd8')
+ssl.setTrustStoreLocation('/home/oleg/Документы/linux_restore/cifra/dss2/dss.truststore')
 ssl.setTrustStorePassword('jDbBrwBzzRGx8ik')
 kafkaServiceConfigProperities.setSsl(ssl)
 
+//======================================Security========================================================================
+ def security = new KafkaServiceConfigurationProperties.Security()
+security.setProtocol("SSL")
+kafkaServiceConfigProperities.setSecurity(security)
+
 //======================================PRODUCER========================================================================
 def kafkaServiceConfigurationProducer = new KafkaServiceConfigurationProperties.Producer()
-kafkaServiceConfigurationProducer.setTopic("dss.incoming")
+kafkaServiceConfigurationProducer.setTopic("dss2.incoming")
 kafkaServiceConfigProperities.setProducer(kafkaServiceConfigurationProducer)
 def creditConveyorKafkaServiceConfig = new CreditConveyorKafkaServiceConfig(kafkaServiceConfigProperities)
 
@@ -180,18 +177,18 @@ payload1.setStatedCreditNeed(statedCreditNeed)
 payload1.setExternalRequestId(3519863776035379927)
 payload1.setMessageId('214b7415-b15a-4c98-81fb-e05f3b88e657')
 payload1.setScoreRouteType('scoring_pos')
-payload1.setPerson(person)
-payload1.setExternalRequestType(7612474480564115185)
-payload1.setExternalStatusId(7612474480564115185)
-payload1.setCreatedGroupId('7aeab2f9-87a3-4ddb-9ca7-2fb256b4d7d7')
-payload1.setCreatedDate('03/04/2023 - 14:16:50 +0300')
-payload1.setDocuments(documents)
-payload1.setAddresses(addresses)
-payload1.setConsents(consents)
+//payload1.setPerson(person)
+//payload1.setExternalRequestType(7612474480564115185)
+//payload1.setExternalStatusId(7612474480564115185)
+//payload1.setCreatedGroupId('7aeab2f9-87a3-4ddb-9ca7-2fb256b4d7d7')
+//payload1.setCreatedDate('03/04/2023 - 14:16:50 +0300')
+//payload1.setDocuments(documents)
+//payload1.setAddresses(addresses)
+//payload1.setConsents(consents)
 
 //======================================SENDING=========================================================================
 println("sending....")
-def future =  kafkaTemplate.send('dss.incoming', payload1)
+def future =  kafkaTemplate.send('dss2.incoming', payload1)
 future.get()
 
 println('mess was send')
